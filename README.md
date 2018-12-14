@@ -1,3 +1,32 @@
+## mars-vue: fork from tag v2.5.21
+
+### install
+
+After cloning the repo, run:
+
+``` bash
+$ npm install # or yarn
+```
+
+### develop NPM scripts
+
+``` bash
+# watch and auto re-build dist/vue.runtime.js
+# mars only uses vue.runtime.js
+$ npm run dev:runtime
+
+# since we remove DOM ops, test will fail, ignore test for now
+# watch and auto re-run unit tests in Chrome
+# $ npm run dev:test
+
+# build all dist files, including npm packages
+$ npm run build
+
+# since we remove DOM ops, test will fail, ignore test for now
+# run the full test suite, include linting / type checking
+# $ npm test
+```
+
 <p align="center"><a href="https://vuejs.org" target="_blank" rel="noopener noreferrer"><img width="100" src="https://vuejs.org/images/logo.png" alt="Vue logo"></a></p>
 
 <p align="center">
