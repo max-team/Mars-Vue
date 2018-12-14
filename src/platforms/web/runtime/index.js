@@ -1,4 +1,5 @@
 /* @flow */
+/* eslint-disable no-unused-vars */
 
 import Vue from 'core/index'
 import config from 'core/config'
@@ -31,7 +32,8 @@ extend(Vue.options.directives, platformDirectives)
 extend(Vue.options.components, platformComponents)
 
 // install platform patch function
-Vue.prototype.__patch__ = inBrowser ? patch : noop
+// Vue.prototype.__patch__ = inBrowser ? patch : noop
+Vue.prototype.__patch__ = patch
 
 // public mount method
 Vue.prototype.$mount = function (
