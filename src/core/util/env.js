@@ -4,7 +4,8 @@
 export const hasProto = '__proto__' in {}
 
 // Browser environment sniffing
-export const inBrowser = typeof window !== 'undefined'
+// export const inBrowser = typeof window !== 'undefined'
+export const inBrowser = false
 export const inWeex = typeof WXEnvironment !== 'undefined' && !!WXEnvironment.platform
 export const weexPlatform = inWeex && WXEnvironment.platform.toLowerCase()
 export const UA = inBrowser && window.navigator.userAgent.toLowerCase()

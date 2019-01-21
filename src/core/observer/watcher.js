@@ -165,6 +165,7 @@ export default class Watcher {
     /* istanbul ignore else */
     if (this.lazy) {
       this.dirty = true
+      this.__changed__ = true
     } else if (this.sync) {
       this.run()
     } else {

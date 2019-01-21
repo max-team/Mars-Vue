@@ -40,6 +40,7 @@ methodsToPatch.forEach(function (method) {
     if (inserted) ob.observeArray(inserted)
     // notify change
     ob.dep.notify()
+    ob.__changed__ = true
     return result
   })
 })

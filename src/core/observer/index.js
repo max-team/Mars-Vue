@@ -189,6 +189,11 @@ export function defineReactive (
       }
       childOb = !shallow && observe(newVal)
       dep.notify()
+      if (!obj._isVue && obj.__ob__) {
+        const ob = obj.__ob__;
+        ob.__changedKeys__ = ob.__changedKeys__ ? ob.__changedKeys__ : {}
+        ob.__changedKeys__[key] = true
+      }
     }
   })
 }
@@ -227,6 +232,8 @@ export function set (target: Array<any> | Object, key: any, val: any): any {
   }
   defineReactive(ob.value, key, val)
   ob.dep.notify()
+  ob.__changedKeys__ = ob.__changedKeys__ ? ob.__changedKeys__ : {}
+  ob.__changedKeys__[key] = true
   return val
 }
 

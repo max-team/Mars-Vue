@@ -13,18 +13,19 @@ $ npm install # or yarn
 
 ``` bash
 # watch and auto re-build dist/vue.runtime.js
-# mars only uses vue.runtime.js
+# [we only need vue.runtime.js]
 $ npm run dev:runtime
 
-# since we remove DOM ops, test will fail, ignore test for now
 # watch and auto re-run unit tests in Chrome
+# [since we remove DOM ops, test will fail, ignore test for now]
 # $ npm run dev:test
 
 # build all dist files, including npm packages
-$ npm run build
+# [only build runtime js which is needed]
+$ npm run build:runtime
 
-# since we remove DOM ops, test will fail, ignore test for now
 # run the full test suite, include linting / type checking
+# [since we remove DOM ops, test will fail, ignore test for now]
 # $ npm test
 ```
 
