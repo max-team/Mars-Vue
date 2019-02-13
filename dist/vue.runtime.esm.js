@@ -1,8 +1,11 @@
 /*!
  * Vue.js v2.5.21
- * (c) 2014-2018 Evan You
+ * (c) 2014-2019 Evan You
  * Released under the MIT License.
  */
+// a copy of http://icode.baidu.com/repos/baidu/atom-site/mars-vue/blob/dbg_v2-5-21_fork:dist/vue.runtime.esm.js
+/* eslint-disable */
+
 /*  */
 
 var emptyObject = Object.freeze({});
@@ -496,29 +499,14 @@ function parsePath (path) {
 var hasProto = '__proto__' in {};
 
 // Browser environment sniffing
-var inBrowser = typeof window !== 'undefined';
+// export const inBrowser = typeof window !== 'undefined'
+var inBrowser = false;
 var inWeex = typeof WXEnvironment !== 'undefined' && !!WXEnvironment.platform;
 var weexPlatform = inWeex && WXEnvironment.platform.toLowerCase();
-var UA = inBrowser && window.navigator.userAgent.toLowerCase();
-var isIE = UA && /msie|trident/.test(UA);
-var isIE9 = UA && UA.indexOf('msie 9.0') > 0;
-var isEdge = UA && UA.indexOf('edge/') > 0;
-var isAndroid = (UA && UA.indexOf('android') > 0) || (weexPlatform === 'android');
-var isIOS = (UA && /iphone|ipad|ipod|ios/.test(UA)) || (weexPlatform === 'ios');
-var isChrome = UA && /chrome\/\d+/.test(UA) && !isEdge;
+var isIOS = weexPlatform === 'ios';
 
 // Firefox has a "watch" function on Object.prototype...
 var nativeWatch = ({}).watch;
-if (inBrowser) {
-  try {
-    var opts = {};
-    Object.defineProperty(opts, 'passive', ({
-      get: function get () {
-      }
-    })); // https://github.com/facebook/flow/issues/285
-    window.addEventListener('test-passive', null, opts);
-  } catch (e) {}
-}
 
 // this needs to be lazy-evaled because vue may be required before
 // vue-server-renderer can set VUE_ENV
@@ -858,6 +846,7 @@ methodsToPatch.forEach(function (method) {
     if (inserted) { ob.observeArray(inserted); }
     // notify change
     ob.dep.notify();
+    ob.__changed__ = true;
     return result
   });
 });
@@ -1031,6 +1020,11 @@ function defineReactive$$1 (
       }
       childOb = !shallow && observe(newVal);
       dep.notify();
+      if (!obj._isVue && obj.__ob__) {
+        var ob = obj.__ob__;
+        ob.__changedKeys__ = ob.__changedKeys__ ? ob.__changedKeys__ : {};
+        ob.__changedKeys__[key] = true;
+      }
     }
   });
 }
@@ -1069,6 +1063,8 @@ function set (target, key, val) {
   }
   defineReactive$$1(ob.value, key, val);
   ob.dep.notify();
+  ob.__changedKeys__ = ob.__changedKeys__ ? ob.__changedKeys__ : {};
+  ob.__changedKeys__[key] = true;
   return val
 }
 
@@ -1811,7 +1807,7 @@ function logError (err, vm, info) {
     warn(("Error in " + info + ": \"" + (err.toString()) + "\""), vm);
   }
   /* istanbul ignore else */
-  if ((inBrowser || inWeex) && typeof console !== 'undefined') {
+  if ((inWeex) && typeof console !== 'undefined') {
     console.error(err);
   } else {
     throw err
@@ -2048,25 +2044,7 @@ function _traverse (val, seen) {
 var mark;
 var measure;
 
-if (process.env.NODE_ENV !== 'production') {
-  var perf = inBrowser && window.performance;
-  /* istanbul ignore if */
-  if (
-    perf &&
-    perf.mark &&
-    perf.measure &&
-    perf.clearMarks &&
-    perf.clearMeasures
-  ) {
-    mark = function (tag) { return perf.mark(tag); };
-    measure = function (name, startTag, endTag) {
-      perf.measure(name, startTag, endTag);
-      perf.clearMarks(startTag);
-      perf.clearMarks(endTag);
-      perf.clearMeasures(name);
-    };
-  }
-}
+if (process.env.NODE_ENV !== 'production') ;
 
 /*  */
 
@@ -3296,6 +3274,7 @@ Watcher.prototype.update = function update () {
   /* istanbul ignore else */
   if (this.lazy) {
     this.dirty = true;
+    this.__changed__ = true;
   } else if (this.sync) {
     this.run();
   } else {
@@ -5234,7 +5213,7 @@ function getTagNamespace (tag) {
 var unknownElementCache = Object.create(null);
 function isUnknownElement (tag) {
   /* istanbul ignore if */
-  if (!inBrowser) {
+  {
     return true
   }
   if (isReservedTag(tag)) {
@@ -5280,6 +5259,7 @@ function query (el) {
 }
 
 /*  */
+/* eslint-disable no-unused-vars */
 
 // import { namespaceMap } from 'web/util/index'
 
@@ -6304,11 +6284,7 @@ var emptyMod = {
   update: noop
 };
 
-var transition = inBrowser ? {
-  create: noop,
-  activate: noop,
-  remove: noop
-} : {};
+var transition = {};
 
 var platformModules = [
   emptyMod, // attrs,
@@ -6368,38 +6344,6 @@ Vue.prototype.$mount = function (
   el = el && inBrowser ? query(el) : undefined;
   return mountComponent(this, el, hydrating)
 };
-
-// devtools global hook
-/* istanbul ignore next */
-if (inBrowser) {
-  setTimeout(function () {
-    if (config.devtools) {
-      if (devtools) {
-        devtools.emit('init', Vue);
-      } else if (
-        process.env.NODE_ENV !== 'production' &&
-        process.env.NODE_ENV !== 'test' &&
-        isChrome
-      ) {
-        console[console.info ? 'info' : 'log'](
-          'Download the Vue Devtools extension for a better development experience:\n' +
-          'https://github.com/vuejs/vue-devtools'
-        );
-      }
-    }
-    if (process.env.NODE_ENV !== 'production' &&
-      process.env.NODE_ENV !== 'test' &&
-      config.productionTip !== false &&
-      typeof console !== 'undefined'
-    ) {
-      console[console.info ? 'info' : 'log'](
-        "You are running Vue in development mode.\n" +
-        "Make sure to turn on production mode when deploying for production.\n" +
-        "See more tips at https://vuejs.org/guide/deployment.html"
-      );
-    }
-  }, 0);
-}
 
 /*  */
 
