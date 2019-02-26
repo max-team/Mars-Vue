@@ -2041,10 +2041,33 @@ function _traverse (val, seen) {
   }
 }
 
+// import { inBrowser } from './env'
+
 var mark;
 var measure;
 
-if (process.env.NODE_ENV !== 'production') ;
+if (process.env.NODE_ENV !== 'production') {
+  // const perf = inBrowser && window.performance
+  var perf = global && global.performance;
+  /* istanbul ignore if */
+  if (
+    perf &&
+    perf.mark &&
+    perf.measure &&
+    perf.clearMarks &&
+    perf.clearMeasures
+  ) {
+    mark = function (tag) { return perf.mark(tag); };
+    measure = function (name, startTag, endTag) {
+      perf.measure(name, startTag, endTag);
+      var duration = perf.getEntriesByName(name)[0].duration;
+      duration > 1 && console.info('[perf: measure]', name, parseFloat(duration.toFixed(3)));
+      perf.clearMarks(startTag);
+      perf.clearMarks(endTag);
+      perf.clearMeasures(name);
+    };
+  }
+}
 
 /*  */
 
