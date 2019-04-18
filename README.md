@@ -1,4 +1,4 @@
-## vue runtime for mars
+## vue runtime for Mars
 fork from tag v2.5.21
 
 ### install
@@ -31,7 +31,7 @@ $ npm run build:runtime
 
 ### commit and push
 
-commit and push to `dbg_v2-5-21_fork` branch
+commit and push to `v2_5_21_fork` branch
 
 <hr>
 <p align="center"><a href="https://vuejs.org" target="_blank" rel="noopener noreferrer"><img width="100" src="https://vuejs.org/images/logo.png" alt="Vue logo"></a></p>
