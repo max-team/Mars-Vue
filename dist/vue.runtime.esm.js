@@ -3,9 +3,7 @@
  * (c) 2014-2019 Evan You
  * Released under the MIT License.
  */
-// a copy of http://icode.baidu.com/repos/baidu/atom-site/mars-vue/blob/dbg_v2-5-21_fork:dist/vue.runtime.esm.js
-/* eslint-disable */
-
+// This file is a copy of: https://github.com/max-team/mars-vue/blob/v2_5_21_fork/dist/vue.runtime.esm.js
 /*  */
 
 var emptyObject = Object.freeze({});
@@ -6295,9 +6293,56 @@ function callHook$1 (dir, hook, vnode, oldVnode, isDestroy) {
   }
 }
 
+/**
+ * @file filters.js
+ * @description bind vnode to vm for Mars filters
+ * @author zhangwentao <winty2013@gmail.com>
+ */
+
+function bindFilter(vnode) {
+    var data = vnode.data;
+    var context = vnode.context;
+    if (data && data.f && data.f.fid !== undefined) {
+        context._fData = context._fData || {};
+        context._fData[data.f.fid] = vnode;
+    }
+}
+
+function unbindFilter(vnode) {
+    var data = vnode.data;
+    var context = vnode.context;
+    if (data && data.f && data.f.fid !== undefined) {
+        if (context._fData && context._fData[data.f.fid]) {
+            context._fData[data.f.fid] = null;
+            delete context._fData[data.f.fid];
+        }
+    }
+}
+
+var filters = {
+    create: function create (_, vnode) {
+        bindFilter(vnode);
+    },
+    update: function update (oldVnode, vnode) {
+        bindFilter(vnode);
+
+        var data = vnode.data;
+        var oldData = oldVnode.data;
+        var fid = data && data.f && data.f.fid;
+        var oldfid = oldData && oldData.f && oldData.f.fid;
+        if (fid !== oldfid) {
+            unbindFilter(oldVnode);
+        }
+    },
+    destroy: function destroy (vnode) {
+        unbindFilter(vnode);
+    }
+};
+
 var baseModules = [
   ref,
-  directives
+  directives,
+  filters
 ];
 
 // import attrs from './attrs'
