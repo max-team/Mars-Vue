@@ -14,7 +14,7 @@ const banner =
   ` * (c) 2014-${new Date().getFullYear()} Evan You\n` +
   ' * Released under the MIT License.\n' +
   ' */\n' + 
-  '// This file is a copy of: https://github.com/max-team/mars-vue/blob/v2_5_21_fork/dist/vue.runtime.esm.js'
+  '// This file is a copy of: https://github.com/max-team/mars-vue/blob/v2_5_21_fork/dist/vue.runtime.esm.js\n' +
   '/* eslint-disable */\n'
 
 const weexFactoryPlugin = {

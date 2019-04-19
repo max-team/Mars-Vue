@@ -4,6 +4,8 @@
  * Released under the MIT License.
  */
 // This file is a copy of: https://github.com/max-team/mars-vue/blob/v2_5_21_fork/dist/vue.runtime.esm.js
+/* eslint-disable */
+
 /*  */
 
 var emptyObject = Object.freeze({});
