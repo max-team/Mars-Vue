@@ -10,6 +10,7 @@ import { bindObjectProps } from './bind-object-props'
 import { renderStatic, markOnce } from './render-static'
 import { bindObjectListeners } from './bind-object-listeners'
 import { resolveScopedSlots } from './resolve-slots'
+import { setFilterData } from './set-filter'
 
 export function installRenderHelpers (target: any) {
   target._o = markOnce
@@ -21,6 +22,7 @@ export function installRenderHelpers (target: any) {
   target._i = looseIndexOf
   target._m = renderStatic
   target._f = resolveFilter
+  target._ff = setFilterData
   target._k = checkKeyCodes
   target._b = bindObjectProps
   target._v = createTextVNode

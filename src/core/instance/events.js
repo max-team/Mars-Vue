@@ -118,7 +118,13 @@ export function eventsMixin (Vue: Class<Component>) {
   }
 
   Vue.prototype.$emit = function (event: string): Component {
-    const vm: Component = this
+    const vm: Component = this;
+    const args = toArray(arguments, 1);
+    if (process.env.NODE_ENV !== 'production') {
+      if (args.length > 1) {
+        tip('由于小程序机制限制，$emit 当前只支持传递一个参数');
+      }
+    }
     if (process.env.NODE_ENV !== 'production') {
       const lowerCaseEvent = event.toLowerCase()
       if (lowerCaseEvent !== event && vm._events[lowerCaseEvent]) {
@@ -134,7 +140,6 @@ export function eventsMixin (Vue: Class<Component>) {
     let cbs = vm._events[event]
     if (cbs) {
       cbs = cbs.length > 1 ? toArray(cbs) : cbs
-      const args = toArray(arguments, 1)
       for (let i = 0, l = cbs.length; i < l; i++) {
         try {
           cbs[i].apply(vm, args)
@@ -143,6 +148,10 @@ export function eventsMixin (Vue: Class<Component>) {
         }
       }
     }
+
+    // 小程序的根页面没有 triggerEvent 方法
+    this.$mp.scope.triggerEvent && this.$mp.scope.triggerEvent(event, ...args);
+
     return vm
   }
 }
