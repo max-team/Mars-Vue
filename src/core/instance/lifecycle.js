@@ -4,12 +4,14 @@ import config from '../config'
 import Watcher from '../observer/watcher'
 import { mark, measure } from '../util/perf'
 import { createEmptyVNode } from '../vdom/vnode'
-import { updateComponentListeners } from './events'
-import { resolveSlots } from './render-helpers/resolve-slots'
+// import { updateComponentListeners } from './events'
+// import { resolveSlots } from './render-helpers/resolve-slots'
 import { toggleObserving } from '../observer/index'
 import { pushTarget, popTarget } from '../observer/dep'
 
 import {
+  hasOwn,
+  hyphenate,
   warn,
   noop,
   remove,
@@ -59,18 +61,21 @@ export function lifecycleMixin (Vue: Class<Component>) {
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
     const vm: Component = this
     const prevEl = vm.$el
-    const prevVnode = vm._vnode
+    // const prevVnode = vm._vnode
     const restoreActiveInstance = setActiveInstance(vm)
     vm._vnode = vnode
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
-    if (!prevVnode) {
-      // initial render
-      vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
-    } else {
-      // updates
-      vm.$el = vm.__patch__(prevVnode, vnode)
-    }
+    // if (!prevVnode) {
+    //   // initial render
+    //   vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
+    // } else {
+    //   // updates
+    //   vm.$el = vm.__patch__(prevVnode, vnode)
+    // }
+
+    updateChildProps.call(vm);
+
     restoreActiveInstance()
     // update __vue__ reference
     if (prevEl) {
@@ -213,16 +218,19 @@ export function mountComponent (
 }
 
 
-// for @marsjs/core
-// only used by render helper updateChildProps
-export function updateChildProps(propsData) {
+// for @marsjs/core used for update Child Props
+export function updateChildProps() {
+  if (!(this._pData && this._isMounted && this.$root)) {
+    return
+  }
 
+  const _pData = this._pData
+  delete this._pData
   if (process.env.NODE_ENV !== 'production') {
     isUpdatingChildComponent = true
   }
 
-  const {compId} = propsData
-  if (compId) {
+  Object.keys(_pData).forEach(compId => {
     const vmList = this.$root.__vms__[compId]
     const vm = vmList && vmList[vmList.cur]
     // update props
@@ -230,17 +238,26 @@ export function updateChildProps(propsData) {
       toggleObserving(false)
       const props = vm._props
       const propKeys = vm.$options._propKeys || []
+      const propsData = _pData[compId];
       for (let i = 0; i < propKeys.length; i++) {
+        
         const key = propKeys[i]
-        props[key] = propsData[key]
+        const altKey = hyphenate(key)
+        let res = {}
+        if (hasOwn(propsData, key)) {
+          res[key] = propsData[key]
+        } else if (hasOwn(propsData, altKey)) {
+          res[key] = propsData[altKey]
+        }
+        // props[key] = propsData[key]
         const propOptions: any = vm.$options.props // wtf flow?
-        props[key] = validateProp(key, propOptions, propsData, vm)
+        props[key] = validateProp(key, propOptions, res, vm)
       }
       toggleObserving(true)
       // keep a copy of raw propsData
       vm.$options.propsData = propsData
     }
-  }
+  })
 
   if (process.env.NODE_ENV !== 'production') {
     isUpdatingChildComponent = false
@@ -300,11 +317,11 @@ export function updateChildComponent (
   listeners = listeners || emptyObject
   const oldListeners = vm.$options._parentListeners
   vm.$options._parentListeners = listeners
-  updateComponentListeners(vm, listeners, oldListeners)
+  // updateComponentListeners(vm, listeners, oldListeners)
 
   // resolve slots + force update if has children
   if (hasChildren) {
-    vm.$slots = resolveSlots(renderChildren, parentVnode.context)
+    // vm.$slots = resolveSlots(renderChildren, parentVnode.context)
     vm.$forceUpdate()
   }
 

@@ -7,7 +7,7 @@ import { initExtend } from './extend'
 import { initAssetRegisters } from './assets'
 import { set, del } from '../observer/index'
 import { ASSET_TYPES } from 'shared/constants'
-import builtInComponents from '../components/index'
+// import builtInComponents from '../components/index'
 
 import {
   warn,
@@ -53,7 +53,7 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   // components with in Weex's multi-instance scenarios.
   Vue.options._base = Vue
 
-  extend(Vue.options.components, builtInComponents)
+  // extend(Vue.options.components, builtInComponents)
 
   initUse(Vue)
   initMixin(Vue)

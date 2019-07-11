@@ -16,9 +16,9 @@ import {
   isUnknownElement
 } from 'web/util/index'
 
-import { patch } from './patch'
-import platformDirectives from './directives/index'
-import platformComponents from './components/index'
+// import { patch } from './patch'
+// import platformDirectives from './directives/index'
+// import platformComponents from './components/index'
 
 // install platform specific utils
 Vue.config.mustUseProp = mustUseProp
@@ -28,12 +28,12 @@ Vue.config.getTagNamespace = getTagNamespace
 Vue.config.isUnknownElement = isUnknownElement
 
 // install platform runtime directives & components
-extend(Vue.options.directives, platformDirectives)
-extend(Vue.options.components, platformComponents)
+// extend(Vue.options.directives, platformDirectives)
+// extend(Vue.options.components, platformComponents)
 
 // install platform patch function
 // Vue.prototype.__patch__ = inBrowser ? patch : noop
-Vue.prototype.__patch__ = patch
+Vue.prototype.__patch__ = noop
 
 // public mount method
 Vue.prototype.$mount = function (
