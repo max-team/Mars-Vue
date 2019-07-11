@@ -1,10 +1,10 @@
+/* eslint-disable */
 /*!
  * Vue.js v2.5.21
  * (c) 2014-2019 Evan You
  * Released under the MIT License.
  */
 // This file is a copy of: https://github.com/max-team/mars-vue/blob/v2_5_21_fork/dist/vue.runtime.esm.js
-/* eslint-disable */
 
 /*  */
 
@@ -2974,7 +2974,7 @@ function setFilterData(data, type) {
         Object.keys(props).forEach(function (key) {
             f._p[key] = props[key];
         });
-        return;
+        return props;
     }
 
     if (type === 'for') {
@@ -2990,8 +2990,13 @@ function setFilterData(data, type) {
 
 function setPropsData(propsData) {
     var compId = propsData.compId;
+    var _p = propsData._p;
     if (compId) {
         this._pData = this._pData || {};
+        if (_p) {
+            delete propsData._p;
+            Object.assign(propsData, _p);
+        }
         this._pData[compId] = propsData;
     }
 }

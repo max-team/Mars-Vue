@@ -19,7 +19,7 @@ export function setFilterData(data, type) {
         Object.keys(props).forEach(key => {
             f._p[key] = props[key];
         });
-        return;
+        return props;
     }
 
     if (type === 'for') {

@@ -9,13 +9,14 @@ const version = process.env.VERSION || require('../package.json').version
 const weexVersion = process.env.WEEX_VERSION || require('../packages/weex-vue-framework/package.json').version
 
 const banner =
+  '/* eslint-disable */\n' + 
   '/*!\n' +
   ` * Vue.js v${version}\n` +
   ` * (c) 2014-${new Date().getFullYear()} Evan You\n` +
   ' * Released under the MIT License.\n' +
   ' */\n' + 
-  '// This file is a copy of: https://github.com/max-team/mars-vue/blob/v2_5_21_fork/dist/vue.runtime.esm.js\n' +
-  '/* eslint-disable */\n'
+  '// This file is a copy of: https://github.com/max-team/mars-vue/blob/v2_5_21_fork/dist/vue.runtime.esm.js\n'
+
 
 const weexFactoryPlugin = {
   intro () {
