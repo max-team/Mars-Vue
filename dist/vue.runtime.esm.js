@@ -80,6 +80,17 @@ function isValidArrayIndex (val) {
 }
 
 /**
+ * Convert a value to a string that is actually rendered.
+ */
+function toString (val) {
+  return val == null
+    ? ''
+    : typeof val === 'object'
+      ? JSON.stringify(val, null, 2)
+      : String(val)
+}
+
+/**
  * Make a map and return a function for checking if a key
  * is in that map.
  */
@@ -2526,15 +2537,7 @@ function eventsMixin (Vue) {
   };
 
   Vue.prototype.$emit = function (event) {
-    var ref;
-
     var vm = this;
-    var args = toArray(arguments, 1);
-    if (process.env.NODE_ENV !== 'production') {
-      if (args.length > 1) {
-        tip('由于小程序机制限制，$emit 当前只支持传递一个参数');
-      }
-    }
     if (process.env.NODE_ENV !== 'production') {
       var lowerCaseEvent = event.toLowerCase();
       if (lowerCaseEvent !== event && vm._events[lowerCaseEvent]) {
@@ -2547,6 +2550,7 @@ function eventsMixin (Vue) {
         );
       }
     }
+    var args = toArray(arguments, 1);
     var cbs = vm._events[event];
     if (cbs) {
       cbs = cbs.length > 1 ? toArray(cbs) : cbs;
@@ -2560,7 +2564,10 @@ function eventsMixin (Vue) {
     }
 
     // 小程序的根页面没有 triggerEvent 方法
-    this.$mp.scope.triggerEvent && (ref = this.$mp.scope).triggerEvent.apply(ref, [ event ].concat( args ));
+    this.$mp.scope.triggerEvent && this.$mp.scope.triggerEvent(event, {
+      trigger: '$emit',
+      args: args
+    });
 
     return vm
   };
@@ -2811,6 +2818,41 @@ function mountComponent (
     callHook(vm, 'mounted');
   }
   return vm
+}
+
+
+// for @marsjs/core
+// only used by render helper updateChildProps
+function updateChildProps(propsData) {
+
+  if (process.env.NODE_ENV !== 'production') {
+    isUpdatingChildComponent = true;
+  }
+
+  var compId = propsData.compId;
+  if (compId) {
+    var vmList = this.$root.__vms__[compId];
+    var vm = vmList && vmList[vmList.cur];
+    // update props
+    if (vm && vm.$options.props) {
+      toggleObserving(false);
+      var props = vm._props;
+      var propKeys = vm.$options._propKeys || [];
+      for (var i = 0; i < propKeys.length; i++) {
+        var key = propKeys[i];
+        props[key] = propsData[key];
+        var propOptions = vm.$options.props; // wtf flow?
+        props[key] = validateProp(key, propOptions, propsData, vm);
+      }
+      toggleObserving(true);
+      // keep a copy of raw propsData
+      vm.$options.propsData = propsData;
+    }
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    isUpdatingChildComponent = false;
+  }
 }
 
 function updateChildComponent (
@@ -3841,9 +3883,11 @@ function bindObjectProps (
 /*  */
 
 function installRenderHelpers (target) {
+  target._s = toString;
   target._l = renderList;
   target._f = resolveFilter;
   target._ff = setFilterData;
+  target._pp = updateChildProps;
   target._b = bindObjectProps;
 }
 

@@ -212,6 +212,41 @@ export function mountComponent (
   return vm
 }
 
+
+// for @marsjs/core
+// only used by render helper updateChildProps
+export function updateChildProps(propsData) {
+
+  if (process.env.NODE_ENV !== 'production') {
+    isUpdatingChildComponent = true
+  }
+
+  const {compId} = propsData
+  if (compId) {
+    const vmList = this.$root.__vms__[compId]
+    const vm = vmList && vmList[vmList.cur]
+    // update props
+    if (vm && vm.$options.props) {
+      toggleObserving(false)
+      const props = vm._props
+      const propKeys = vm.$options._propKeys || []
+      for (let i = 0; i < propKeys.length; i++) {
+        const key = propKeys[i]
+        props[key] = propsData[key]
+        const propOptions: any = vm.$options.props // wtf flow?
+        props[key] = validateProp(key, propOptions, propsData, vm)
+      }
+      toggleObserving(true)
+      // keep a copy of raw propsData
+      vm.$options.propsData = propsData
+    }
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    isUpdatingChildComponent = false
+  }
+}
+
 export function updateChildComponent (
   vm: Component,
   propsData: ?Object,

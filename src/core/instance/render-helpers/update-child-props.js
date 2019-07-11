@@ -1,0 +1,1 @@
+export {updateChildProps as updateChildProps} from '../lifecycle'
