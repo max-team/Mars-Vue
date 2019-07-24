@@ -51,6 +51,7 @@ export class Observer {
         copyAugment(value, arrayMethods, arrayKeys)
       }
       this.observeArray(value)
+      this.__isArray__ = true
     } else {
       this.walk(value)
     }
