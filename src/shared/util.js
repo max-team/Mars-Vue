@@ -117,7 +117,7 @@ export const isBuiltInTag = makeMap('slot,component', true)
 /**
  * Check if an attribute is a reserved attribute.
  */
-export const isReservedAttribute = makeMap('key,ref,slot,slot-scope,is')
+export const isReservedAttribute = makeMap('key,slot,slot-scope,is')
 
 /**
  * Remove an item from an array.
